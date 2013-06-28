@@ -185,6 +185,27 @@ ifeq ($(OS),Darwin)
 			SDK_DIR := $(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs
 		endif
 	endif
+	ifeq (,$(findstring 10.8, $(OSXVER))) 
+		BUILDING_ON_LION := 1
+		DEVELOPER_DIR := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/
+#SDKs/MacOSX10.8.sdk/usr/include/alloca.h
+		COMPILER_BIN_DIR := $(DEVELOPER_DIR)/usr/bin
+		SDK_DIR := $(DEVELOPER_DIR)/SDKs
+	else
+		BUILDING_ON_LION := 0
+		# Need to figure out which version of XCode you have installed
+		# See if you have the clang compiler in $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+		ifeq ($(wildcard $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang),)
+		     	# no clang, you're running older Xcode	 
+			COMPILER_BIN_DIR := $(DEVELOPER_DIR)/usr/bin
+			SDK_DIR := $(DEVELOPER_DIR)/SDKs		     
+		else
+			# clang is in the new Toolchain, use it
+			COMPILER_BIN_DIR := $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/bin
+			SDK_DIR := $(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs
+		endif
+	endif
+
 
 	#test to see if you have a compiler in the right place, if you don't abort with an error
 
@@ -197,7 +218,7 @@ ifeq ($(OS),Darwin)
         endif
 
 
-	SDKROOT ?= $(SDK_DIR)/MacOSX10.6.sdk
+	SDKROOT ?= $(SDK_DIR)/MacOSX10.8.sdk
 
 	ifeq ($(origin AR), default)
 		AR = libtool -static -o
