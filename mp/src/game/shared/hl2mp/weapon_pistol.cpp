@@ -209,7 +209,9 @@ void CWeaponPistol::PrimaryAttack( void )
 		// great for a feature we're evaluating. (sjb)
 		pOwner->ViewPunchReset();
 	}
-
+//	#ifndef CLIENT_DLL
+//	CBaseEntity::Create( "rpg_missile", GetOwner()->EyePosition(), GetOwner()->EyeAngles(), GetOwnerEntity());
+//	#endif
 	BaseClass::PrimaryAttack();
 
 	// Add an accuracy penalty which can move past our maximum penalty time if we're really spastic
