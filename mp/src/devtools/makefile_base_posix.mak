@@ -167,7 +167,7 @@ ifeq ($(OS),Darwin)
 	CCACHE := $(SRCROOT)/devtools/bin/osx32/ccache
 	DEVELOPER_DIR := $(shell /usr/bin/xcode-select -print-path)
 
-	ifeq (,$(findstring 10.7, $(OSXVER))) 
+	ifeq (,$(findstring 10.7 , $(OSXVER))) 
 		BUILDING_ON_LION := 0
 		COMPILER_BIN_DIR := $(DEVELOPER_DIR)/usr/bin
 		SDK_DIR := $(DEVELOPER_DIR)/SDKs
@@ -185,7 +185,7 @@ ifeq ($(OS),Darwin)
 			SDK_DIR := $(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs
 		endif
 	endif
-	ifeq (,$(findstring 10.8, $(OSXVER))) 
+	ifeq (,$(findstring 10.8 , $(OSXVER))) 
 		BUILDING_ON_LION := 1
 		DEVELOPER_DIR := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/
 #SDKs/MacOSX10.8.sdk/usr/include/alloca.h
@@ -206,11 +206,15 @@ ifeq ($(OS),Darwin)
 		endif
 	endif
 
-
+        ifeq (,$(findstring 10.9 , $(OSXVER))) 
+                BUILDING_ON_LION := 1
+                DEVELOPER_DIR := /Applications/Xcode.app/Contents/Developer
+                COMPILER_BIN_DIR := $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/bin
+                SDK_DIR := $(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs
+       endif
 	#test to see if you have a compiler in the right place, if you don't abort with an error
-
         ifeq ($(wildcard $(COMPILER_BIN_DIR)/clang),)
-        $(error Unable to find compiler, install and configure XCode)
+        $(error Unable to find compiler, install and configure XCode $(COMPILER_BIN_DIR) )
         endif
 
         ifeq ($(wildcard $(COMPILER_BIN_DIR)/clang++),)
@@ -241,7 +245,7 @@ ifeq ($(OS),Darwin)
 	endif
 
 	#FIXME: NOTE:Full path specified because the xcode 4.0 preview has a terribly broken dsymutil, so ref the 3.2 one
-	GEN_SYM ?= $(DEVELOPER_DIR)/usr/bin/dsymutil
+	GEN_SYM ?= $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil
 	ifeq ($(CFG),release)
 		STRIP ?= strip -S
 	else
